@@ -36,8 +36,14 @@ class GoogleRequest(object):
     def build_url(self):
         raise NotImplementedError("You must build an URL!")
 
-    def make_request(self):
-        pass
+    def make_get_request(self):
+        response = requests.get(self.url)
+        json_response= response.json()
+        next_page_token = json_response.get('next_page_token', False)
+        results = json_response.get('results', [])
+        for result in results:
+            print(result.get('place_id'))
+
 
 
 class GoogleRequestPlaceTextSearch(GoogleRequest):
@@ -109,3 +115,8 @@ class GoogleRequestPlaceDetail(GoogleRequest):
 
     def build_url(self):
         self.url = self.api_uri + "placeid=" + self.placeid + "&key=" + self.google_key
+
+
+object = GoogleRequestPlaceTextSearch(query="hotel", location="Sevilla", type="lodging")
+object.build_url()
+object.make_get_request()
