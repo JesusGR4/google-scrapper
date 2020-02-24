@@ -3,6 +3,8 @@
 import os
 import requests
 
+from python.mongodb.MongoClient import MongoConnection
+
 
 class GoogleRequest(object):
     _api_uri = ""
@@ -37,13 +39,7 @@ class GoogleRequest(object):
         raise NotImplementedError("You must build an URL!")
 
     def make_get_request(self):
-        response = requests.get(self.url)
-        json_response= response.json()
-        next_page_token = json_response.get('next_page_token', False)
-        results = json_response.get('results', [])
-        for result in results:
-            print(result.get('place_id'))
-
+        raise NotImplementedError("You must define make get request")
 
 
 class GoogleRequestPlaceTextSearch(GoogleRequest):
@@ -97,12 +93,20 @@ class GoogleRequestPlaceTextSearch(GoogleRequest):
             url += "&nexttoken=" + self.next_token
         self.url = url
 
+    def make_get_request(self):
+        response = requests.get(self.url)
+        json_response = response.json()
+        next_page_token = json_response.get('next_page_token', False)
+        results = json_response.get('results', [])
+        for result in results:
+            print(result.get('place_id'))
+
 
 class GoogleRequestPlaceDetail(GoogleRequest):
     _placeid = ""
 
     def __init__(self, placeid):
-        self.api_uri = "https://maps.googleapis.com/maps/api/place/textsearch/json?"
+        self.api_uri = "https://maps.googleapis.com/maps/api/place/details/json?"
         self.placeid = placeid
 
     @property
@@ -116,7 +120,24 @@ class GoogleRequestPlaceDetail(GoogleRequest):
     def build_url(self):
         self.url = self.api_uri + "placeid=" + self.placeid + "&key=" + self.google_key
 
+    def make_get_request(self):
+        try:
+            # response = requests.get(self.url)
+            # json_response = response.json()
+            # place_info = json_response.get('result', {})
 
-object = GoogleRequestPlaceTextSearch(query="hotel", location="Sevilla", type="lodging")
-object.build_url()
-object.make_get_request()
+            if not True and place_info:
+                print('No place info fkn noob')
+            else:
+                mongo_object = MongoConnection()
+                client = mongo_object.client
+                database = mongo_object.database
+                google_database = client[database]
+                # google_database.place_info.insert_one(place_info)
+                for document in list(google_database.place_info.find({})):
+                    print(document)
+
+
+        except Exception as e:
+            print(e)
+

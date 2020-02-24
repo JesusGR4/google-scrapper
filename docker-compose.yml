@@ -25,6 +25,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: $MONGO_INITDB_ROOT_PASSWORD
       MONGO_INITDB_HOST: $MONGO_INITDB_HOST
       GOOGLE_KEY: $GOOGLE_KEY
+      PYTHONPATH: $PYTHONPATH
     links:
       - mongodb
     volumes:

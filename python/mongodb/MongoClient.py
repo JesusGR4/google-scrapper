@@ -32,3 +32,12 @@ class MongoConnection(object):
         self._client = value
 
 
+    @property
+    def database(self):
+        return self._database
+
+    @database.setter
+    def database(self, value):
+        self._database = value
+
+
