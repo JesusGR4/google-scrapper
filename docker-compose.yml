@@ -13,8 +13,8 @@ services:
     volumes:
       - ./mongo/data:/data/db
   python:
-    build: ./python
-    command: bash -c "sleep 100000000000000 && python /usr/src/MongoClient.py"
+    build: .
+    command: bash -c "sleep 100000000000000"
     container_name: 'python-project'
     restart: unless-stopped
     depends_on:
@@ -29,4 +29,4 @@ services:
     links:
       - mongodb
     volumes:
-      - ./python:/usr/src
+      - .:/usr/src
