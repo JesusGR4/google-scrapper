@@ -3,7 +3,7 @@
 import os
 import requests
 
-from python.mongodb.MongoClient import MongoConnection
+from mongodb.MongoClient import MongoConnection
 
 
 class GoogleRequest(object):
