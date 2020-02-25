@@ -2,8 +2,13 @@
 # -*- coding: utf-8 -*-
 
 from google.GoogleRequest import GoogleRequestPlaceTextSearch
+from redis_scrapper.RedisClient import RedisClient
 
-if '__name__' == '__main__':
-  object = GoogleRequestPlaceTextSearch(query="hotel", location="Sevilla", type="lodging")
-  object.build_url()
-  object.make_get_request()
+try:
+    redis = RedisClient()
+    redis_client = redis.client
+    values = redis_client.get('place_id_*')
+    print(values)
+
+except Exception as e:
+    print(e)

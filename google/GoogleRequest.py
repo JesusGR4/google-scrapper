@@ -2,8 +2,11 @@
 # -*- coding: utf-8 -*-
 import os
 import requests
-
+import logging
 from mongodb.MongoClient import MongoConnection
+from redis_scrapper.RedisClient import RedisClient
+
+logging.basicConfig(filename='/var/tmp/python.log', filemode='w', level=logging.DEBUG)
 
 
 class GoogleRequest(object):
@@ -94,12 +97,17 @@ class GoogleRequestPlaceTextSearch(GoogleRequest):
         self.url = url
 
     def make_get_request(self):
+
         response = requests.get(self.url)
         json_response = response.json()
         next_page_token = json_response.get('next_page_token', False)
         results = json_response.get('results', [])
         for result in results:
-            print(result.get('place_id'))
+            redis = RedisClient()
+            place_id = result.get('place_id', False)
+            if place_id == False:
+                break
+            redis.publish('places_id', place_id)
 
 
 class GoogleRequestPlaceDetail(GoogleRequest):
@@ -118,26 +126,23 @@ class GoogleRequestPlaceDetail(GoogleRequest):
         self._placeid = value
 
     def build_url(self):
-        self.url = self.api_uri + "placeid=" + self.placeid + "&key=" + self.google_key
+        self.url = self.api_uri + "placeid=" + str(self.placeid) + "&key=" + self.google_key
 
     def make_get_request(self):
         try:
-            # response = requests.get(self.url)
-            # json_response = response.json()
-            # place_info = json_response.get('result', {})
+            response = requests.get(self.url)
+            json_response = response.json()
+            place_info = json_response.get('result', {})
 
             if not True and place_info:
-                print('No place info fkn noob')
+                logging.error('No place info fkn noob')
             else:
                 mongo_object = MongoConnection()
                 client = mongo_object.client
                 database = mongo_object.database
                 google_database = client[database]
-                # google_database.place_info.insert_one(place_info)
-                for document in list(google_database.place_info.find({})):
-                    print(document)
+                google_database.place_info.insert(place_info)
 
 
         except Exception as e:
             print(e)
-
