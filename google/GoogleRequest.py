@@ -2,11 +2,10 @@
 # -*- coding: utf-8 -*-
 import os
 import requests
-import logging
+
+from config import logger
 from mongodb.MongoClient import MongoConnection
 from redis_scrapper.RedisClient import RedisClient
-
-logging.basicConfig(filename='/var/tmp/python.log', filemode='w', level=logging.DEBUG)
 
 
 class GoogleRequest(object):
@@ -45,13 +44,14 @@ class GoogleRequest(object):
         raise NotImplementedError("You must define make get request")
 
 
+
 class GoogleRequestPlaceTextSearch(GoogleRequest):
     _query = ""
     _location = ""
     _type = ""
-    _next_token = ""
+    _next_token = None
 
-    def __init__(self, query, location, type, next_token=""):
+    def __init__(self, query, location, type, next_token=None):
         self.api_uri = "https://maps.googleapis.com/maps/api/place/textsearch/json?"
         self.query = query
         self.location = location
@@ -100,15 +100,11 @@ class GoogleRequestPlaceTextSearch(GoogleRequest):
 
         response = requests.get(self.url)
         json_response = response.json()
-        next_page_token = json_response.get('next_page_token', False)
-        results = json_response.get('results', [])
-        for result in results:
-            redis = RedisClient()
-            place_id = result.get('place_id', False)
-            if place_id == False:
-                break
-            redis.publish('places_id', place_id)
+        return json_response
 
+    def publish_place_id(self, place_id):
+        redis = RedisClient()
+        redis.publish('places_id', place_id)
 
 class GoogleRequestPlaceDetail(GoogleRequest):
     _placeid = ""
@@ -133,16 +129,16 @@ class GoogleRequestPlaceDetail(GoogleRequest):
             response = requests.get(self.url)
             json_response = response.json()
             place_info = json_response.get('result', {})
-
-            if not True and place_info:
-                logging.error('No place info fkn noob')
-            else:
-                mongo_object = MongoConnection()
-                client = mongo_object.client
-                database = mongo_object.database
-                google_database = client[database]
-                google_database.place_info.insert(place_info)
-
+            if not place_info:
+                logger.error('No place info fkn noob')
+            return place_info
 
         except Exception as e:
-            print(e)
+            logger.error(e)
+
+    def insert_info_in_mongo(self, place_info):
+        mongo_object = MongoConnection()
+        client = mongo_object.client
+        database = mongo_object.database
+        google_database = client[database]
+        google_database.place_info.insert(place_info)

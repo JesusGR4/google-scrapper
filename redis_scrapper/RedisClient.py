@@ -2,9 +2,7 @@
 # -*- coding: utf-8 -*-
 import os
 import redis
-import logging
-
-logging.basicConfig(filename='/var/tmp/python.log', filemode='w', level=logging.DEBUG)
+from config import logger
 
 
 class RedisClient(object):
@@ -18,7 +16,7 @@ class RedisClient(object):
             r = redis.Redis(connection_pool=pool)
             self.client = r
         except Exception as e:
-            logging.error(e)
+            logger.error(e)
 
     @property
     def client(self):
@@ -31,3 +29,19 @@ class RedisClient(object):
     def publish(self, key, value):
         client = self.client
         client.publish(key, value)
+
+    def set(self, key, value):
+        client = self.client
+        client.set(key, value)
+
+    def hmset(self, key, value):
+        client = self.client
+        client.hmset(key, value)
+
+    def get(self, key):
+        client = self.client
+        return client.get(key)
+
+    def hgetall(self, key):
+        client = self.client
+        return client.hgetall(key)

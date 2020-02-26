@@ -3,9 +3,7 @@
 
 from pymongo import MongoClient, errors
 import os
-import logging
-
-logging.basicConfig(filename='/var/tmp/python.log', filemode='w', level=logging.DEBUG)
+from config import logger
 
 
 class MongoConnection(object):
@@ -25,7 +23,7 @@ class MongoConnection(object):
                 password=str(self._password)
             )
         except errors.ServerSelectionTimeoutError as err:
-            logging.error("pymongo ERROR:", err)
+            logger.error("pymongo ERROR:", err)
 
     @property
     def client(self):
