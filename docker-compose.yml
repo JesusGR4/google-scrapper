@@ -23,6 +23,9 @@ services:
     command: python publish-places.py
     container_name: 'publish-places-container'
     restart: unless-stopped
+    depends_on:
+      - redis
+      - subscribe-places
     environment:
       GOOGLE_KEY: $GOOGLE_KEY
       REDIS_PASSWORD: $REDIS_PASSWORD
@@ -39,6 +42,7 @@ services:
     restart: unless-stopped
     depends_on:
       - mongodb
+      - redis
     environment:
       GOOGLE_KEY: $GOOGLE_KEY
       REDIS_PASSWORD: $REDIS_PASSWORD
