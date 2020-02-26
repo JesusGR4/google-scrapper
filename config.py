@@ -2,5 +2,5 @@
 # -*- coding: utf-8 -*-
 import logging, os
 log_file = os.getenv('PYTHON_LOG')
-logging.basicConfig(filename=log_file, filemode='w', level=logging.DEBUG)
+logging.basicConfig(filename=log_file, filemode='a', level=logging.DEBUG)
 logger = logging.getLogger('basic_logging')
