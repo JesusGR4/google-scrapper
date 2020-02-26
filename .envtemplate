@@ -1,0 +1,14 @@
+# Example of environment file
+# Copy and rename .envtemplate to .env
+
+MONGO_INITDB_HOST=localhost
+MONGO_INITDB_DATABASE=test
+MONGO_INITDB_ROOT_USERNAME=test
+MONGO_INITDB_ROOT_PASSWORD=test
+GOOGLE_KEY=$GOOGLE_KEY
+PYTHONPATH=/usr/src
+REDIS_HOST=localhost
+REDIS_PASSWORD=test
+TEXT_SEARCH_TIMING=5
+PLACES_ID_TIMING=5
+PYTHON_LOG=./debug.log

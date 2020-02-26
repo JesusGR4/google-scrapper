@@ -4,8 +4,6 @@ services:
     image: redis:5.0.7-alpine
     container_name: 'redis-container'
     command: redis-server --requirepass $REDIS_PASSWORD
-    ports:
-      - '6379:6379'
   mongodb:
     image: mongo:4.2.3
     container_name: 'mongo-container'
@@ -17,27 +15,43 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - ./mongo/data:/data/db
-  python:
+      - ./mongo:/data/db
+  publish-places:
     build: .
-    command: bash -c "sleep 100000000000000"
-    container_name: 'python-project'
+    links:
+      - redis
+    command: python publish-places.py
+    container_name: 'publish-places-container'
+    restart: unless-stopped
+    environment:
+      GOOGLE_KEY: $GOOGLE_KEY
+      REDIS_PASSWORD: $REDIS_PASSWORD
+      REDIS_HOST: $REDIS_HOST
+      TEXT_SEARCH_TIMING: $TEXT_SEARCH_TIMING
+      PYTHONPATH: $PYTHONPATH
+      PYTHON_LOG: $PYTHON_LOG
+    volumes:
+      - .:/usr/src
+  subscribe-places:
+    build: .
+    command: python subscribe-info.py
+    container_name: 'subscribe-places-container'
     restart: unless-stopped
     depends_on:
       - mongodb
     environment:
+      GOOGLE_KEY: $GOOGLE_KEY
+      REDIS_PASSWORD: $REDIS_PASSWORD
+      REDIS_HOST: $REDIS_HOST
       MONGO_INITDB_DATABASE: $MONGO_INITDB_DATABASE
       MONGO_INITDB_ROOT_USERNAME: $MONGO_INITDB_ROOT_USERNAME
       MONGO_INITDB_ROOT_PASSWORD: $MONGO_INITDB_ROOT_PASSWORD
       MONGO_INITDB_HOST: $MONGO_INITDB_HOST
-      GOOGLE_KEY: $GOOGLE_KEY
-      PYTHONPATH: $PYTHONPATH
-      REDIS_PASSWORD: $REDIS_PASSWORD
-      REDIS_HOST: $REDIS_HOST
-      PYTHON_LOG: $PYTHON_LOG
-      TEXT_SEARCH_TIMING: $TEXT_SEARCH_TIMING
       PLACES_ID_TIMING: $PLACES_ID_TIMING
+      PYTHONPATH: $PYTHONPATH
+      PYTHON_LOG: $PYTHON_LOG
     links:
       - mongodb
+      - redis
     volumes:
       - .:/usr/src
