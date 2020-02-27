@@ -136,9 +136,9 @@ class GoogleRequestPlaceDetail(GoogleRequest):
         except Exception as e:
             logger.error(e)
 
-    def insert_info_in_mongo(self, place_info):
+    def insert_info_in_mongo(self, place_id, place_info):
         mongo_object = MongoConnection()
         client = mongo_object.client
         database = mongo_object.database
         google_database = client[database]
-        google_database.place_info.insert(place_info)
+        google_database.place_info.insert({place_id: place_info})

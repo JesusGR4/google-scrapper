@@ -21,7 +21,7 @@ while True:
         place_details = GoogleRequestPlaceDetail(decoded_place_id)
         place_details.build_url()
         json_response = place_details.make_get_request()
-        place_details.insert_info_in_mongo(json_response)
+        place_details.insert_info_in_mongo(decoded_place_id, json_response)
 
     logger.info("Let's sleep waiting for info")
     time.sleep(timing)
