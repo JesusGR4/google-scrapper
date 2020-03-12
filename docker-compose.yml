@@ -80,9 +80,9 @@ services:
   django:
     container_name: django-app
     build:
-      context: ./django-server/
+      context: django_server/
       dockerfile: Dockerfile
-    command: bash -c "python /app/manage.py runserver 0.0.0.0:8000"
+    command: bash -c "sleep 10 && python /django_server/manage.py runserver 0.0.0.0:8000"
     environment:
       DB_PORT_DJANGO: $DB_PORT_DJANGO
       DB_DATABASE_DJANGO: $DB_DATABASE_DJANGO
@@ -94,8 +94,9 @@ services:
       MONGO_INITDB_ROOT_USERNAME: $MONGO_INITDB_ROOT_USERNAME
       MONGO_INITDB_ROOT_PASSWORD: $MONGO_INITDB_ROOT_PASSWORD
       MONGO_INITDB_HOST: $MONGO_INITDB_HOST
+      DJANGO_SETTINGS_MODULE: $DJANGO_SETTINGS_MODULE
     volumes:
-      - ./django-server/:/app/
+      - ./django_server/:/django_server/
     ports:
       - "8000:8000"
     depends_on:
