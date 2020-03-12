@@ -44,8 +44,5 @@ class Command(BaseCommand):
                 if not website:
                     place_info_instance.web_status = "no_website"
                 place_info_instance.save()
-
-
-
         except Exception as e:
             logger.error(e)
