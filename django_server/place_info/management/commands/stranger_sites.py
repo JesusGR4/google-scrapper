@@ -25,25 +25,26 @@ class Command(BaseCommand):
             for place_info in res:
                 key = list(place_info.keys())[1]
                 place_info_values = place_info.get(key)
+                if not place_info_values:
+                    continue
                 website = place_info_values.get('website', None)
                 name = place_info_values.get('name', None)
                 rating = place_info_values.get('rating', 0.0)
                 international_phone_number = place_info_values.get('international_phone_number', None)
                 formatted_address = place_info_values.get('formatted_address', None)
                 place_id = place_info_values.get('place_id', None)
-                if not website:
-                    print(place_info_values)
-                    break
-                    place_info_instance = PlaceInfo()
-                    place_info_instance.website = None
-                    place_info_instance.name = name
+                place_info_instance = PlaceInfo()
+                place_info_instance.website = None
+                place_info_instance.name = name
 
-                    place_info_instance.rating = rating
-                    place_info_instance.international_phone_number = international_phone_number
-                    place_info_instance.address = formatted_address
-                    place_info_instance.place_id = place_id
+                place_info_instance.rating = rating
+                place_info_instance.international_phone_number = international_phone_number
+                place_info_instance.address = formatted_address
+                place_info_instance.place_id = place_id
+                if not website:
                     place_info_instance.web_status = "no_website"
-                    place_info_instance.save()
+                place_info_instance.save()
+
 
 
         except Exception as e:
