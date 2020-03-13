@@ -66,4 +66,5 @@ class Command(BaseCommand):
 
         except Exception as e:
             logger.error(e)
+            print(website)
 
