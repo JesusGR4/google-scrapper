@@ -28,6 +28,7 @@ class Command(BaseCommand):
                 key = list(place_info.keys())[1]
                 place_info_values = place_info.get(key)
                 if not place_info_values:
+                    print(place_info)
                     logger.warning("No place info found")
                     continue
                 place_id = place_info_values.get('place_id', None)
