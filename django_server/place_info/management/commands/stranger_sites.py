@@ -33,6 +33,7 @@ class Command(BaseCommand):
                     continue
                 place_id = place_info_values.get('place_id', None)
                 if PlaceInfo.objects.filter(place_id=place_id).exists():
+                    print(place_id)
                     continue
                 website = place_info_values.get('website', None)
                 name = place_info_values.get('name', None)
