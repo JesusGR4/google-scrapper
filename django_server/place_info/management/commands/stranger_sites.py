@@ -53,14 +53,17 @@ class Command(BaseCommand):
                     try:
                         response = requests.get(website)
                         place_info_instance.web_status = response.status_code
-                    except requests.exceptions.Timeout:
+                    except requests.exceptions.Timeout as e:
                         logger.warning('timeout')
+                        print(e)
                         place_info_instance.web_status = "timeout"
                         # Maybe set up for a retry, or continue in a retry loop
-                    except requests.exceptions.TooManyRedirects:
+                    except requests.exceptions.TooManyRedirects as e:
+                        print(e)
                         logger.warning('too_many_redirects')
                         place_info_instance.web_status = "too_many_redirects"
                     except requests.exceptions.RequestException as e:
+                        print(e)
                         logger.warning(e)
                         place_info_instance.web_status = "request_exception"
                 place_info_instance.save()
